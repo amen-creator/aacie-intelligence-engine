@@ -1,0 +1,12 @@
+data/
+logs/
+*.db
+__pycache__/
+.env
+.venv/
+*.pyc
+frontend/
+backend/
+*.zip
+*.bat
+node_modules/

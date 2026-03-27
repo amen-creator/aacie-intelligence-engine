@@ -1,0 +1,48 @@
+# Docker Compose Architecture for AACIE V6 (Production)
+version: '3.8'
+
+services:
+  # 1. PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: aacie_admin
+      POSTGRES_PASSWORD: aacie_secret_password
+      POSTGRES_DB: aacie_intelligence
+    ports:
+      - "5432:5432"
+    volumes:
+      - aacie_pg_data:/var/lib/postgresql/data
+
+  # 2. FastAPI Intelligence Engine (Backend)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://aacie_admin:aacie_secret_password@db:5432/aacie_intelligence
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - JINA_API_KEY=${JINA_API_KEY}
+      - SCRAPER_API_KEY=${SCRAPER_API_KEY}
+    depends_on:
+      - db
+
+  # 3. Next.js Mission Control (Frontend)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+
+volumes:
+  aacie_pg_data:

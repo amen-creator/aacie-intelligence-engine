@@ -1,0 +1,12 @@
+streamlit
+apscheduler
+groq
+requests
+python-dotenv
+duckduckgo-search
+plotly
+pyvis
+fpdf2
+wordcloud
+matplotlib
+networkx

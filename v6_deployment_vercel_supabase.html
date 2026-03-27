@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>دليل النشر العالمي: Vercel + Supabase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #020617;
+            --bg-panel: rgba(15, 23, 42, 0.7);
+            --primary: #10b981;
+            --secondary: #3b82f6;
+            --text-main: #f8fafc;
+        }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Cairo', sans-serif;
+            margin: 0; padding: 2rem;
+            line-height: 1.8;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { color: var(--secondary); font-family: 'Rajdhani', sans-serif; text-align: center; font-size: 2.5rem; }
+        h2 { color: var(--primary); border-bottom: 2px solid rgba(16,185,129,0.2); padding-bottom: 0.5rem; }
+        .step-box {
+            background: var(--bg-panel);
+            border: 1px solid rgba(59,130,246,0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .step-num {
+            display: inline-block;
+            background: var(--primary);
+            color: #000;
+            width: 30px; height: 30px;
+            text-align: center; border-radius: 50%;
+            font-weight: bold; line-height: 30px;
+            margin-left: 10px;
+        }
+        code {
+            background: #1e293b;
+            padding: 2px 6px;
+            border-radius: 5px;
+            color: #fca5a5;
+            direction: ltr; display: inline-block;
+        }
+        .alert {
+            background: rgba(239, 68, 68, 0.1);
+            border-right: 4px solid #ef4444;
+            padding: 1rem; border-radius: 8px; margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 إطلاق AACIE V6 للعالم</h1>
+        <p style="text-align:center; color:#94a3b8;">دليل النشر المخصص باستخدام Vercel و Supabase</p>
+
+        <div class="step-box">
+            <h2><span class="step-num">1</span> تجهيز قاعدة البيانات (Supabase)</h2>
+            <p>سنستخدم Supabase كقاعدة بيانات PostgreSQL قوية ومجانية لتخزين الأخبار وتحليلات الذكاء الاصطناعي:</p>
+            <ol>
+                <li>اذهب إلى <a href="https://supabase.com" style="color:var(--secondary)">Supabase</a> واصنع حساباً مجانياً واضغط <b>New Project</b>.</li>
+                <li>ضع اسماً للمشروع (مثل: <code>aacie-db</code>) وأنشئ كلمة مرور قوية (احفظها جيداً!).</li>
+                <li>انتظر دقيقة حتى تبدأ القاعدة.</li>
+                <li>من القائمة الجانبية، اذهب إلى <b>Project Settings</b> ➜ <b>Database</b>.</li>
+                <li>في قسم <b>Connection string</b>، اختر <b>URI</b> وانسخ الرابط الذي سيبدو هكذا:
+                    <br><code>postgresql://postgres:[YOUR-PASSWORD]@db.xxxx.supabase.co:5432/postgres</code>
+                </li>
+            </ol>
+        </div>
+
+        <div class="step-box">
+            <h2><span class="step-num">2</span> استضافة محرك الذكاء FastAPI (Render)</h2>
+            <div class="alert"><b>ملاحظة هامة:</b> لا يمكن رفع الـ Backend على Vercel لأن وكلاء LangGraph يحتاجون أحياناً 20-40 ثانية لتحليل الأخبار، وVercel يقطع الاتصال المجاني بعد 10 ثواني (Timeout). لذلك سنرفع الـ Backend مجاناً على <b>Render.com</b>.</div>
+            <ol>
+                <li>قم برفع مجلد <code>backend/</code> فقط إلى مستودع جديد على GitHub.</li>
+                <li>اذهب إلى <a href="https://render.com" style="color:var(--secondary)">Render.com</a> واضغط <b>New Web Service</b> واربط مستودعك.</li>
+                <li>اختر البيئة: <code>Python 3</code></li>
+                <li>في خانة البناء (Build Command) اكتب: <code>pip install -r requirements.txt</code></li>
+                <li>في خانة التشغيل (Start Command) اكتب: <code>uvicorn main:app --host 0.0.0.0 --port 10000</code></li>
+                <li>في قسم Environment Variables، انسخ المفاتيح التالية:
+                    <ul>
+                        <li><code>DATABASE_URL</code> = (رابط Supabase الذي حصلت عليه في الخطوة الأولى).</li>
+                        <li><code>GROQ_API_KEY</code> = مفتاح Llama-3 الخاص بك.</li>
+                        <li><code>JINA_API_KEY</code> = مفتاح القارئ.</li>
+                        <li><code>SCRAPER_API_KEY</code> = مفتاح جلب الأخبار.</li>
+                    </ul>
+                </li>
+                <li>اضغط <b>Deploy</b>. انسخ رابط الـ API الجديد الخاص بك من Render (مثل: <code>https://aacie-api.onrender.com</code>).</li>
+            </ol>
+        </div>
+
+        <div class="step-box">
+            <h2><span class="step-num">3</span> استضافة واجهة التحكم (Vercel)</h2>
+            <p>هنا سنرفع الرادار البصري ثلاثي الأبعاد وواجهة Next.js الساحرة:</p>
+            <ol>
+                <li>قم برفع مجلد <code>frontend/</code> فقط إلى مستودع آخر على GitHub.</li>
+                <li>اذهب إلى <a href="https://vercel.com" style="color:var(--secondary)">Vercel.com</a> واضغط <b>Add New</b> ➜ <b>Project</b>.</li>
+                <li>قم باستيراد مستودع الـ Frontend الخاص بك. سيكتشف Vercel تلقائياً أنه مشروع <code>Next.js</code>.</li>
+                <li>قبل الضغط على Deploy، افتح قسم <b>Environment Variables</b> وأضف المتغير التالي:
+                    <br><code>NEXT_PUBLIC_API_URL</code> = (الرابط الذي حصلت عليه من موقع Render في الخطوة الثانية).
+                </li>
+                <li>اضغط <b>Deploy</b>! 🚀</li>
+            </ol>
+            <p style="margin-top: 1rem; color: #10b981; font-weight: bold; text-align: center;">بمجرد انتهاء Vercel، ستحصل على رابط عالمي يمكن لأي شخص مشاركته والدخول منه لرؤية النظام يعمل بالكامل متصلاً بقاعدة بيانات Supabase!</p>
+        </div>
+    </div>
+</body>
+</html>
