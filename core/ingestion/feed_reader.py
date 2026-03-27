@@ -7,7 +7,7 @@ Proxies requests through ScraperAPI for ultimate reliability.
 
 import feedparser
 import urllib.parse
-from ddgs import DDGS
+from duckduckgo_search import DDGS
 from datetime import datetime
 from core.config import Config, get_logger
 
