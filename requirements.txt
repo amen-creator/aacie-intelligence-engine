@@ -10,3 +10,6 @@ fpdf2
 wordcloud
 matplotlib
 networkx
+feedparser
+beautifulsoup4
+lxml
